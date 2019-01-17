@@ -34,7 +34,7 @@ class SelectSort(object):
             for j in range(i+1, length):
                 if self.list[min_index] > self.list[j]:
                     min_index = j
-            self.list[i], self.list[min_index] = self.list[min_index], self.list[i]
+            self.swap(min_index, i)
         return self.list
 
 
