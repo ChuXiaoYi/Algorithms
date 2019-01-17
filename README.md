@@ -369,4 +369,88 @@ if __name__ == '__main__':
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20190117180230724.png)
 
+### 快速排序（Quick Sort）
+快速排序（Quick Sort）由图灵奖获得者Tony Hoare发明，被列为20世纪十大算法之一。冒泡排序的升级版，交换排序的一种。快速排序的时间复杂度为O(nlog(n))。
 
+快速排序算法的核心思想：通过一趟排序将待排记录分割成独立的两部分，其中一部分记录的关键字均比另一部分记录的关键字小，然后分别对这两部分继续进行排序，以达到整个记录集合的排序目的。
+##### 算法描述
+快速排序使用分治法来把一个串（list）分为两个子串（sub-lists）。具体算法描述如下：
+- 从数列中挑出一个元素，称为 “基准”（pivot）；
+- 重新排序数列，所有元素比基准值小的摆放在基准前面，所有元素比基准值大的摆在基准的后面（相同的数可以到任一边）。在这个分区退出之后，该基准就处于数列的中间位置。这个称为分区（partition）操作；
+- 递归地（recursive）把小于基准值元素的子数列和大于基准值元素的子数列排序。
+##### 动态演示
+![http://chuxiaoyi.cn/media/editor/9_20190117192549821306.gif](http://chuxiaoyi.cn/media/editor/9_20190117192549821306.gif)
+##### 代码实现
+
+```python
+# -*- coding: utf-8 -*-
+# --------------------------------------
+#       @Time    : 2019/1/17 下午6:55
+#       @Author  : cxy =.=
+#       @File    : quick_sort.py
+#       @Software: PyCharm
+#       @Desc    : 快速排序
+# --------------------------------------
+from util.tool import caculate_time
+
+
+class QuickSort(object):
+    def __init__(self, li=None):
+        self.list = li
+
+    def swap(self, i, j):
+        """
+        交换元素，i，j表示下标
+        :param i:
+        :param j:
+        :return:
+        """
+        self.list[i], self.list[j] = self.list[j], self.list[i]
+
+    @caculate_time
+    def quick_sort(self):
+        """
+        调用入口
+        :return:
+        """
+        self.qsort(0, len(self.list) - 1)
+        return self.list
+
+    def qsort(self, low, high):
+        """
+        递归调用
+        :return:
+        """
+        if low < high:
+            pivot_index = self.partition(low, high)
+            self.qsort(low, pivot_index - 1)
+            self.qsort(pivot_index + 1, high)
+
+    def partition(self, low, high):
+        """
+        在分区中选取一个基准元素（pivot），不断的移动游标，进行替换，使得左边为全部比他小的，右边为全部比他大的；
+        并且，这个pivot也变化位置，但是值不变
+        :param low:
+        :param high:
+        :return: pivot所在的下标
+        """
+        li = self.list
+        pivot = self.list[low]
+        while low < high:
+            while low < high and li[high] > pivot:
+                high -= 1
+            self.swap(low, high)
+            while low < high and li[low] < pivot:
+                low += 1
+            self.swap(low, high)
+        return low
+
+
+if __name__ == '__main__':
+    li = [4, 1, 7, 3, 8, 5, 9, 2, 6]
+    ss = QuickSort(li)
+    ss.quick_sort()
+```
+结果：
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20190117192855484.png)
