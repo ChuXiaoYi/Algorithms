@@ -454,3 +454,135 @@ if __name__ == '__main__':
 结果：
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20190117192855484.png)
+
+### 堆排序（Heap Sort）
+堆排序在 top K 问题中使用比较频繁。堆排序是采用二叉堆的数据结构来实现的，虽然实质上还是一维数组。二叉堆是一个近似完全二叉树 。
+
+**二叉堆具有以下性质**：
+
+父节点的键值总是大于或等于（小于或等于）任何一个子节点的键值。
+每个节点的左右子树都是一个二叉堆（都是最大堆或最小堆）。
+
+##### 算法描述
+- **构造最大堆（Build_Max_Heap）**：若数组下标范围为0~n，考虑到单独一个元素是大根堆，则从下标n/2开始的元素均为大根堆。于是只要从n/2-1开始，向前依次构造大根堆，这样就能保证，构造到某个节点时，它的左右子树都已经是大根堆。
+
+- **堆排序（HeapSort）**：由于堆是用数组模拟的。得到一个大根堆后，数组内部并不是有序的。因此需要将堆化数组有序化。思想是移除根节点，并做最大堆调整的递归运算。第一次将heap[0]与heap[n-1]交换，再对heap[0...n-2]做最大堆调整。第二次将heap[0]与heap[n-2]交换，再对heap[0...n-3]做最大堆调整。重复该操作直至heap[0]和heap[1]交换。由于每次都是将最大的数并入到后面的有序区间，故操作完后整个数组就是有序的了。
+
+- **最大堆调整（Max_Heapify）**：该方法是提供给上述两个过程调用的。目的是将堆的末端子节点作调整，使得子节点永远小于父节点 。
+
+##### 动态演示
+![http://www.chuxiaoyi.cn/media/editor/2_20190121113614440245.gif](http://www.chuxiaoyi.cn/media/editor/2_20190121113614440245.gif)
+
+##### 代码实现
+```python
+# -*- coding: utf-8 -*-
+# --------------------------------------
+#       @Time    : 2019/1/18 下午2:48
+#       @Author  : cxy =.=
+#       @File    : heap_sort.py
+#       @Software: PyCharm
+#       @Desc    : 堆排序
+# --------------------------------------
+
+
+def heap_sort(arr):
+    """
+    构造大根堆，堆排序
+    每次堆排序之后，都要进行最大根堆调整，使得堆顶为最大值
+    :param arr:
+    :return:
+    """
+    n = len(arr)
+    first = n // 2 - 1  # 最后一个非叶子节点
+    # 第一次构造大根堆
+    for start in range(first, -1, -1):
+        max_heapify(arr, start, n - 1)
+    for end in range(n - 1, 0, -1):
+        arr[end], arr[0] = arr[0], arr[end]
+        max_heapify(arr, 0, end - 1)
+    return arr
+
+
+def max_heapify(arr, start, end):
+    """
+    最大根堆调整
+    :param arr:
+    :param start: 表示非叶子节点（也就是每个小分支的根节点）
+    :param end: 边界下标
+    :return:
+    """
+    root = start
+    while True:
+        child = root * 2 + 1
+        if child > end:
+            break
+        elif child + 1 <= end and arr[child] < arr[child + 1]:
+            child = child + 1  # 保证child为最大的子节点
+        if arr[root] < arr[child]:
+            arr[root], arr[child] = arr[child], arr[root]
+        else:
+            break
+
+
+if __name__ == '__main__':
+    arr = [6, 5, 3, 1, 8, 7, 2, 4]
+    print(heap_sort(arr))
+```
+结果：
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20190121113641271.png)
+
+### 计数排序（Counting Sort）
+计数排序不是基于比较的排序算法，其核心在于将输入的数据值转化为键存储在额外开辟的数组空间中。 作为一种线性时间复杂度的排序，计数排序要求输入的数据必须是有确定范围的整数。计数排序是一个稳定的排序算法。当输入的元素是 n 个 0到 k 之间的整数时，时间复杂度是O(n+k)，空间复杂度也是O(n+k)，其排序速度快于任何比较排序算法。当k不是很大并且序列比较集中时，计数排序是一个很有效的排序算法。
+
+##### 算法描述
+- 找出待排序的数组中最大元素；
+- 统计数组中每个值为i的元素出现的次数，存入数组C的第i项；
+- 反向填充目标数组：将每个元素i放在新数组的第C(i)项，每放一个元素就将C(i)减去1。
+
+##### 动态演示
+![http://www.chuxiaoyi.cn/media/editor/3_20190121131026884154.gif](http://www.chuxiaoyi.cn/media/editor/3_20190121131026884154.gif)
+
+##### 代码实现
+```python
+# -*- coding: utf-8 -*-
+# --------------------------------------
+#       @Time    : 2019/1/21 上午11:56
+#       @Author  : cxy =.=
+#       @File    : counting_sort.py
+#       @Software: PyCharm
+#       @Desc    : 计数排序
+# --------------------------------------
+
+
+def countring_sort(arr):
+    """
+    通过计算arr每个元素的次数进行排序
+    :param arr:
+    :return:
+    """
+    index = 0
+    max_value = max(arr)
+    bucket_length = max_value + 1   # 桶的个数
+    bucket = [0 for i in range(bucket_length)]
+
+    # 桶的下标对应arr中的元素
+    for i in arr:
+        bucket[i] += 1
+
+    for j in range(bucket_length):
+        while bucket[j] > 0:
+            arr[index] = j
+            bucket[j] -= 1
+            index += 1
+    return arr
+
+
+if __name__ == '__main__':
+    arr = [6, 5, 3, 1, 8, 7, 2, 4]
+    print(countring_sort(arr))
+```
+
+结果：
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20190121131202835.png)
